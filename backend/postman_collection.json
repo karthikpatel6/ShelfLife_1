@@ -1,0 +1,179 @@
+{
+  "info": {
+    "name": "ShelfLife API Collection",
+    "description": "Complete Postman collection for ShelfLife Library Management Platform API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000/api"
+    },
+    {
+      "key": "token",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login Librarian",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.token) {",
+                  "    pm.collectionVariables.set('token', jsonData.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"librarian@shelflife.com\",\n  \"password\": \"Admin@123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Books",
+      "item": [
+        {
+          "name": "Get Books (Paginated & Filtered)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/books?page=1&limit=10&genre=Fiction&search=Gatsby",
+              "host": ["{{baseUrl}}"],
+              "path": ["books"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" },
+                { "key": "genre", "value": "Fiction" },
+                { "key": "search", "value": "Gatsby" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Add Book (Protected)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Domain-Driven Design\",\n  \"author\": \"Eric Evans\",\n  \"isbn\": \"9780321125217\",\n  \"genre\": \"Computer Science\",\n  \"totalCopies\": 3\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/books",
+              "host": ["{{baseUrl}}"],
+              "path": ["books"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Members",
+      "item": [
+        {
+          "name": "Register Member (Protected)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Grace Hopper\",\n  \"email\": \"grace@example.com\",\n  \"membershipId\": \"MEM007\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/members",
+              "host": ["{{baseUrl}}"],
+              "path": ["members"]
+            }
+          }
+        },
+        {
+          "name": "Get Member Borrow History (Protected)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/members/:id/history",
+              "host": ["{{baseUrl}}"],
+              "path": ["members", ":id", "history"],
+              "variable": [{ "key": "id", "value": "MEMBER_OBJECT_ID" }]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Borrow & Return",
+      "item": [
+        {
+          "name": "Issue Book (Atomic)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"bookId\": \"BOOK_OBJECT_ID\",\n  \"memberId\": \"MEMBER_OBJECT_ID\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/borrow",
+              "host": ["{{baseUrl}}"],
+              "path": ["borrow"]
+            }
+          }
+        },
+        {
+          "name": "Return Book (Protected)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/return/:borrowId",
+              "host": ["{{baseUrl}}"],
+              "path": ["return", ":borrowId"],
+              "variable": [{ "key": "borrowId", "value": "BORROW_RECORD_OBJECT_ID" }]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

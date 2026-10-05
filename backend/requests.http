@@ -1,0 +1,66 @@
+### ShelfLife API - Sample Requests (VS Code REST Client format)
+
+@baseUrl = http://localhost:5000/api
+@authToken = {{login.response.body.token}}
+
+### 1. Health Check
+GET http://localhost:5000/health
+
+### 2. Login (Librarian Auth)
+# @name login
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "librarian@shelflife.com",
+  "password": "Admin@123"
+}
+
+### 3. Get Books (Public - Filter by Genre & Search)
+GET {{baseUrl}}/books?page=1&limit=5&genre=Computer%20Science&search=Clean
+
+### 4. Create a New Book (Protected)
+POST {{baseUrl}}/books
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "title": "Refactoring: Improving the Design of Existing Code",
+  "author": "Martin Fowler",
+  "isbn": "9780134757599",
+  "genre": "Computer Science",
+  "totalCopies": 3,
+  "availableCopies": 3
+}
+
+### 5. Register a New Member (Protected)
+POST {{baseUrl}}/members
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "name": "Frank Miller",
+  "email": "frank.miller@example.com",
+  "membershipId": "MEM006"
+}
+
+### 6. Borrow a Book (Protected - Atomic operation)
+# Replace bookId and memberId with valid ObjectIds from DB
+POST {{baseUrl}}/borrow
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "bookId": "650000000000000000000001",
+  "memberId": "650000000000000000000002"
+}
+
+### 7. Return a Book (Protected)
+# Replace borrowId with valid BorrowRecord ObjectId
+POST {{baseUrl}}/return/650000000000000000000003
+Authorization: Bearer {{authToken}}
+
+### 8. Get Member History (Protected - computed isOverdue)
+# Replace :id with valid Member ObjectId
+GET {{baseUrl}}/members/650000000000000000000002/history
+Authorization: Bearer {{authToken}}
